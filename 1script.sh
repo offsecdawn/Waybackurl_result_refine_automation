@@ -1,18 +1,19 @@
+
 #!/bin/bash
 
 source ~/.bash_profile
 
 if [[ -z $1 ]];
 then
-	echo "Please provide the root domain file name!"
-	exit
+        echo "Please provide the root domain file name!"
+        exit
 fi
 
-rm -f allfiles.txt uniq_files.txt wayback_only_html.txt wayback_js_files.txt wayback_httprobe_file.txt wayback_json_files.txt
+rm -f allfiles.txt uniq_files.txt wayback_only_html.txt wayback_js_files.txt wayback_httprobe_file.txt wayback_json_files.txt important_http_urls.txt aws_s3_files.t$
 echo "Currently waybackurls extract is in progress!!"
 for i in $(cat $1)
 do
-	waybackurls $i >> allfiles.txt
+        waybackurls $i >> allfiles.txt
 done
 echo "Waybackurls extraction is complete!!"
 sort -ru allfiles.txt >> uniq_files.txt
@@ -23,12 +24,15 @@ echo "We have extracted all html files.Please check [wayback_only_html.txt]"
 echo "Next is to extracct js files from the list"
 cat uniq_files.txt | grep "\.js" | uniq | sort >> wayback_js_files.txt
 cat uniq_files.txt | grep "\.json" | uniq | sort >> wayback_json_files.txt
-echo "Js files have been successfully extracted [wayback_js_files.txt]"
-echo "Json files have been successfully extracted [wayback_json_files.txt]"
+echo "Js files have been successfully extracted **************[wayback_js_files.txt]**************"
+echo "Json files have been successfully extracted **************[wayback_json_files.txt]**************"
+echo "Now extracting important urls from **************[wayback_only_html.txt]**************"
+grep --color=always -i -E -- 'admin|auth|api|jenkins|corp|dev|stag|stg|prod|sandbox|swagger|aws|azure|uat|test|vpn|cms' wayback_only_html.txt >> important_http_urls$
+echo "Please check file **************[important_http_urls.txt]*************"
+grep --color=always -i -E -- 'aws|s3' uniq_files.txt >> aws_s3_files.txt
+echo "Please check file **************[aws_s3_files.txt]*************"
 echo "Process is complete"
 echo "Now start takin screensots selectively"
 echo "The command:"
 echo "--------------"
 echo "cat wayback_only_html.txt | aquatone -threads 20"
-
-
